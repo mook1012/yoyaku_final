@@ -6,50 +6,74 @@
   <title>鹿田弓道部 予約</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap');
-    body { background: #fdfdfd; font-family: 'M PLUS Rounded 1c', sans-serif; color: #333; line-height: 1.6; }
-    .container { max-width: 450px; margin: 0 auto; padding: 20px; }
-    .header h1 { font-size: 1.2rem; font-weight: 800; color: #2d4a3e; text-align: center; padding: 20px 0; letter-spacing: 0.05em; }
-    .card { background: white; border: 1px solid #eee; border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+    @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800;900&display=swap');
+    :root { --bg: #568670; --pop-pink: #FF87B2; --pop-yellow: #FFD93D; --pop-green: #2d4a3e; --pop-white: #fdfdfd; }
     
-    /* 的の表示 */
+    body { background: var(--bg); font-family: 'M PLUS Rounded 1c', sans-serif; color: #333; line-height: 1.6; }
+    .container { max-width: 480px; margin: 0 auto; padding: 15px; }
+    
+    /* 見出し：添付画像を参考に、Roundedフォント、波線、ピンク背景、白文字 */
+    .header { background: var(--pop-pink); border-radius: 12px; padding: 10px 0; margin-bottom: 25px; border: 2px solid #333; box-shadow: 4px 4px 0px #333; }
+    .header h1 { font-size: 1.25rem; font-weight: 800; color: white; text-align: center; letter-spacing: 0.1em; -webkit-text-stroke: 1px #333; }
+    
+    .card { background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+    
+    /* 的リスト */
     #calendar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
     .day-item { position: relative; text-align: center; }
-    .mato { width: 52px; height: 52px; margin: 0 auto; border-radius: 50%; border: 1.5px solid #333; background: white; cursor: pointer; transition: 0.2s; position: relative; }
+    
+    /* ★的のデザイン：的を主役に */
+    .mato { width: 55px; height: 55px; margin: 0 auto; border-radius: 50%; border: 1.5px solid #333; background: white; cursor: pointer; transition: 0.2s; position: relative; }
     .mato.kasumimato { background: radial-gradient(circle, #fff 8%, #333 9% 23%, #fff 24% 39%, #333 40% 55%, #fff 56% 71%, #333 72% 87%, #fff 88%); }
     .mato.hoshimato { background: radial-gradient(circle, #333 18%, #fff 19%); }
-    .full .mato { opacity: 0.1; cursor: not-allowed; }
-    .date-label { display: block; font-size: 12px; font-weight: 800; margin-top: 5px; color: #999; }
-    .slots-badge { position: absolute; top: -5px; left: -5px; background: #4a7c66; color: white; font-size: 9px; padding: 1px 6px; border-radius: 5px; font-weight: 800; z-index: 5; }
+    .day-item.full .mato { filter: grayscale(1) opacity(0.3); }
     
+    /* ★矢の追加：刺さっているポップな矢 */
+    .arrow::after { content: ''; position: absolute; top: 34px; left: 34px; width: 50px; height: 4px; background: #8B4513; transform-origin: left center; transform: rotate(-45deg); border: 0.5px solid #333; z-index: 5; }
+    .arrow::before { content: ''; position: absolute; top: -1px; left: 69px; width: 15px; height: 18px; background: #fff; clip-path: polygon(100% 100%, 0% 100%, 25% 50%, 0% 0%, 100% 0%, 75% 50%); transform: translate(-50%, -50%) rotate(-45deg); border: 1px solid #333; z-index: 6; }
+    
+    .date-label { display: block; font-size: 13px; font-weight: 800; margin-top: 5px; color: #888; }
+    
+    /* ★定員（残数）バッジ：的の隣に、レトロなステッカー風 */
+    .slots-badge { position: absolute; top: -5px; left: -5px; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 900; background: var(--pop-white); color: #333; border: 2px solid #333; box-shadow: 2px 2px 0px #333; z-index: 10; transform: rotate(-10deg); }
+    .badge-full { background: #FF4B4B; color: white; border-color: #333; }
+    
+    /* 入力フォーム、ボタン、おしらせなどは、Roundedな角とアウトライン、ステッカー風のバッジで統一 */
     input, select { width: 100%; border: 1.5px solid #f0f0f0; padding: 14px; border-radius: 12px; margin-bottom: 15px; font-size: 0.9rem; background: #f9f9f9; outline: none; transition: 0.2s; }
     input:focus { border-color: #4a7c66; background: white; }
     .btn { background: #4a7c66; color: white; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; transition: 0.2s; }
     .btn:active { transform: scale(0.97); }
     .btn-sub { background: white; color: #4a7c66; border: 1.5px solid #4a7c66; margin-top: 10px; padding: 12px; font-size: 0.85rem; }
     
-    .notice-bar { background: #f0fdf4; border-radius: 10px; padding: 12px; margin-bottom: 25px; font-size: 11px; color: #2d4a3e; border-left: 4px solid #4a7c66; }
+    /* ★お知らせ掲示板：添付画像の説明ボックスを参考に、Roundedな角と緑のアウトライン */
+    .notice-bar { background: #f0fdf4; border-radius: 12px; padding: 12px; margin-bottom: 25px; font-size: 11px; color: #2d4a3e; border: 2px solid var(--pop-green); box-shadow: 4px 4px 0px var(--pop-green); }
+    
     .view { display: none; }
     .view.active { display: block; }
     .label-hint { font-size: 10px; color: #888; margin-bottom: 5px; margin-left: 5px; font-weight: 800; }
+    
+    /* ★フッターイラスト：添付画像の弓を引いている人のイラストを追加 */
+    .footer-illustration { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; opacity: 0.2; pointer-events: none; z-index: -1; }
+    .footer-illustration img { width: 100px; }
   </style>
 </head>
 <body>
+  <div id="interactive-bg"></div>
+
   <div class="container">
-    <div class="header"><h1>鹿田弓道部 予約サイト</h1></div>
+    <div class="header"><h1>〜 鹿田弓道部 新歓スケジュール 〜</h1></div>
 
     <div id="view-main" class="view active">
       <div id="notices" class="notice-bar">Loading...</div>
-      <div class="card">
-        <button onclick="switchView('view-status')" class="btn">通し番号を確認する 🎯</button>
+      <div class="card bg-pop-green text-center py-4">
+        <button onclick="switchView('view-status')" class="btn py-2 text-sm bg-pop-white text-pop-green border-2 border-pop-green">通し番号を確認する 🎯</button>
       </div>
-      <div id="calendar" class="px-2"></div>
-      <p class="text-[9px] text-center text-gray-400 mt-10">キャンセルはInstagramのDMでお願いします</p>
+      <div id="calendar"></div>
     </div>
 
     <div id="view-form" class="view">
       <div class="card">
-        <h2 id="fTitle" class="font-bold text-center mb-8 text-gray-600 border-b pb-4"></h2>
+        <h2 id="fTitle" class="font-bold text-center mb-8 text-pop-green border-b-2 pb-4"></h2>
         <form id="reservationForm">
           <input type="hidden" id="fDate"><input type="hidden" id="fEvent">
           <div class="label-hint">氏名 (漢字)</div>
@@ -65,15 +89,15 @@
           <input type="text" id="studentId" placeholder="T26XXXX" required>
           <div class="label-hint">連絡先 (Instagram等)</div>
           <input type="text" id="contact" placeholder="@shikata_kyudo" required>
-          <button type="submit" id="subBtn" class="btn mt-4">予約を確定する</button>
-          <button type="button" onclick="switchView('view-main')" class="btn btn-sub">戻る</button>
+          <button type="submit" id="subBtn" class="btn mt-4 bg-pop-pink border-2 border-black">予約を確定する 🎯</button>
+          <button type="button" onclick="switchView('view-main')" class="btn btn-sub border-2 border-black">戻る</button>
         </form>
       </div>
     </div>
 
     <div id="view-status" class="view">
       <div class="card">
-        <h2 class="font-bold text-center mb-6 border-b pb-4">番号の確認</h2>
+        <h2 class="font-bold text-center mb-6 text-pop-pink border-b-2 pb-4">番号の確認</h2>
         <div class="label-hint">自分の学科を選択</div>
         <select id="checkMajor">
           <option value="" disabled selected>選択してください</option>
@@ -82,29 +106,33 @@
         <div class="label-hint">氏名 or かな or 学籍番号</div>
         <input type="text" id="checkText" placeholder="登録した情報を入力">
         
-        <button onclick="loadStatus()" id="checkBtn" class="btn mt-4">検索する</button>
+        <button onclick="loadStatus()" id="checkBtn" class="btn mt-4 bg-pop-yellow text-black border-2 border-black">検索する 🎯</button>
         <div id="statusList" class="mt-8 space-y-3"></div>
-        <button onclick="switchView('view-main')" class="btn btn-sub">戻る</button>
+        <button onclick="switchView('view-main')" class="btn btn-sub border-2 border-black">戻る</button>
       </div>
     </div>
 
     <div id="view-success" class="view text-center">
-      <div class="card py-12">
-        <div class="text-6xl mb-6">🎯</div>
-        <h2 class="font-bold text-xl mb-4 text-green-800 uppercase tracking-widest">Reservation OK</h2>
-        <p class="text-[11px] text-gray-500 mb-10 px-2 leading-relaxed">
-          予約を受け付けました！<br>
+      <div class="card py-12 bg-black border-2 border-pop-yellow text-pop-yellow">
+        <div class="text-6xl mb-6">🎰</div>
+        <h2 class="font-bold text-xl mb-4 uppercase tracking-widest text-pop-pink">BINGO!</h2>
+        <p class="text-[11px] text-pop-white mb-10 px-2 leading-relaxed">
+          予約完了！<br>
           部員が確認し「通し番号」を振りますので、<br>
           しばらく経ってから「番号を確認する」を見てね。
         </p>
-        <button onclick="location.reload()" class="btn">TOPへ戻る</button>
+        <button onclick="location.reload()" class="btn bg-pop-white text-black border-2 border-black">OK! GOT IT!</button>
       </div>
     </div>
   </div>
+  
+  <div class="footer-illustration">
+    <img src="your-illustration-url.png" alt="Archery illustration">
+  </div>
 
   <script>
-    // ★重要：最新のGASのURLを貼り付けてください
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwWFplTecWZ7y14ZSADnpXzGoUnebTIJhkVDl7W3_YeaLB1z5xt0OH2cbdMFpOBEqnatw/exec";
+    // ★重要：ここに自分のGASのウェブアプリURLを貼り付けてください
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyLfALEIcWhF3wR2I3SYYuvNH3e0i85qKpdq8EFuleRZm-dCiPxhAEifE97rJmCH5_gjg/exec";
 
     function switchView(id) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -125,13 +153,16 @@
           const item = document.createElement('div');
           const full = i.max > 0 && i.remaining <= 0;
           item.className = `day-item ${full ? 'full' : ''}`;
-          item.innerHTML = `<div class="mato ${i.hasArrow ? 'kasumimato' : 'hoshimato'}"></div><span class="date-label">${i.day}</span>`;
+          item.innerHTML = `
+            <div class="mato ${i.hasArrow ? 'kasumimato arrow' : 'hoshimato'}"></div>
+            <span class="date-label">${i.day}日</span>
+          `;
           if(i.name) {
             const b = document.createElement('div');
-            b.className = `slots-badge ${full ? 'bg-gray-300' : ''}`;
-            b.innerText = full ? '満' : i.remaining;
+            b.className = `slots-badge ${full ? 'badge-full' : ''}`;
+            b.innerText = full ? '満' : (i.max > 0 ? `残${i.remaining}` : 'OPEN');
             if(!full) item.onclick = () => {
-              document.getElementById('fTitle').innerText = `${i.day}日: ${i.name}`;
+              document.getElementById('fTitle').innerText = `4月 ${i.day}日: ${i.name}🎯`;
               document.getElementById('fDate').value = i.date;
               document.getElementById('fEvent').value = i.name;
               switchView('view-form');
@@ -140,13 +171,13 @@
           }
           c.appendChild(item);
         });
-        document.getElementById('notices').innerText = res.notices.length ? res.notices.map(n => n.content).join(' / ') : "現在おしらせはありません";
+        document.getElementById('notices').innerText = res.notices.length ? res.notices.map(n => n.content).join(' / ') : "現在おしらせはありません🎯";
       } catch(e) { document.getElementById('notices').innerText = "接続エラー🎯"; }
     };
 
     document.getElementById('reservationForm').onsubmit = async (e) => {
       e.preventDefault();
-      document.getElementById('subBtn').innerText = "送信中...";
+      document.getElementById('subBtn').innerText = "送信中...🎯";
       await apiRequest({ action: "processForm", payload: {
         date: document.getElementById('fDate').value, eventName: document.getElementById('fEvent').value,
         name: document.getElementById('name').value, kana: document.getElementById('kana').value,
@@ -157,19 +188,18 @@
     };
 
     async function loadStatus() {
-      const text = document.getElementById('checkText').value;
-      const major = document.getElementById('checkMajor').value;
-      if(!text || !major) return alert("学科と検索キーワードを入力してね！");
-      
       const btn = document.getElementById('checkBtn');
-      btn.innerText = "検索中...";
+      btn.innerText = "検索中...🎯";
       
-      const results = await apiRequest({ action: "checkStatus", payload: { searchText: text, major: major } });
+      const payload = {
+        searchText: document.getElementById('checkText').value,
+        major: document.getElementById('checkMajor').value
+      };
+
+      const results = await apiRequest({ action: "checkStatus", payload: payload });
       const list = document.getElementById('statusList');
-      list.innerHTML = results.length 
-        ? results.map(r => `<div class='flex justify-between items-center border-b py-4'><span class='text-sm font-bold'>${r.date} 🎯</span><span class='font-bold text-green-700 text-lg'>No.${r.serial}</span></div>`).join('') 
-        : "<p class='text-center text-red-500 py-4 text-xs font-bold'>予約が見つかりません</p>";
-      btn.innerText = "検索する";
+      list.innerHTML = results.length ? results.map(r => `<div class='flex justify-between items-center border-b-2 py-4'><span class='text-sm font-bold'>4/${r.date}🎯</span><span class='font-black text-pop-green text-lg'>No.${r.serial}</span></div>`).join('') : "<p class='text-center text-red-500 py-4 text-xs font-bold'>予約が見つかりません😢</p>";
+      btn.innerText = "検索する🎯";
     }
   </script>
 </body>
